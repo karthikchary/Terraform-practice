@@ -16,7 +16,7 @@ resource "local_file" "private_key" {
 
 resource "aws_instance" "example" {
   ami = "ami-04b70fa74e45c3917"
-  instance_type = var.instance_type
+  instance_type = var.instance_type_micro
   vpc_security_group_ids = ["${aws_security_group.web-sg.id}"]
   associate_public_ip_address = true
   key_name = aws_key_pair.generated_key.key_name
@@ -27,6 +27,18 @@ resource "aws_instance" "example" {
 	      EOF
   tags = {
     Name = "webserver",
+    owner = "karthik"
+  }
+}
+
+resource "aws_instance" "jenkins" {
+  ami = "ami-04b70fa74e45c3917"
+  instance_type = var.instance_type_medium
+  vpc_security_group_ids = ["${aws_security_group.jenkins-sg.id}"]
+  associate_public_ip_address = true
+  key_name = aws_key_pair.generated_key.key_name
+  tags = {
+    Name = "Jenkins",
     owner = "karthik"
   }
 }

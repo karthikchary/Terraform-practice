@@ -14,7 +14,15 @@ variable "ssh_port" {
   default = "22"
 }
 
-variable "instance_type" {
+variable "jenkins_port" {
+  default = "8080"
+}
+
+variable "instance_type_micro" {
+  default = "t2.micro"
+}
+
+variable "instance_type_medium" {
   default = "t2.micro"
 }
 
