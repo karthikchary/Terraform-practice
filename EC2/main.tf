@@ -8,19 +8,25 @@ resource "aws_key_pair" "generated_key" {
   public_key = tls_private_key.example.public_key_openssh
 }
 
+resource "local_file" "private_key" {
+  filename = "private.pem"
+  content = tls_private_key.example.private_key_pem
+  file_permission = "0400"
+}
+
 resource "aws_instance" "example" {
-  ami = "ami-0ff8a91507f77f867"
+  ami = "ami-04b70fa74e45c3917"
   instance_type = var.instance_type
   vpc_security_group_ids = ["${aws_security_group.web-sg.id}"]
   associate_public_ip_address = true
   key_name = aws_key_pair.generated_key.key_name
   user_data = <<-EOF
 	      #!/bin/bash
-	      sudo yum update -y && sudo yum install httpd -y
-	      sudo systemctl start httpd && sudo systemctl enable httpd
+	      sudo apt update -y && sudo apt install apache2 -y
+	      sudo systemctl start apache2 && sudo systemctl apache2 httpd
 	      EOF
   tags = {
-    Name = "Terraform-example",
+    Name = "webserver",
     owner = "karthik"
   }
 }

@@ -6,6 +6,10 @@ variable "httpd_port" {
   default = "80"
 }
 
+variable "https_port" {
+  default = "443"
+}
+
 variable "ssh_port" {
   default = "22"
 }
