@@ -9,7 +9,7 @@ resource "aws_key_pair" "generated_key" {
 }
 
 resource "local_file" "private_key" {
-  filename = "private.pem"
+  filename = "${var.key_name}"
   content = tls_private_key.example.private_key_pem
   file_permission = "0400"
 }
@@ -20,7 +20,8 @@ resource "aws_instance" "example" {
   vpc_security_group_ids = ["${aws_security_group.web-sg.id}"]
   associate_public_ip_address = true
   key_name = aws_key_pair.generated_key.key_name
-  user_data = file("${path.module}/apache.sh")
+  # user_data = file("${path.module}/apache.sh")
+  user_data = file("install_ansible.sh")
   tags = {
     Name = "webserver",
     owner = "karthik"
