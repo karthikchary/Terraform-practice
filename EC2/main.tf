@@ -20,7 +20,6 @@ resource "aws_instance" "example" {
   vpc_security_group_ids = ["${aws_security_group.web-sg.id}"]
   associate_public_ip_address = true
   key_name = aws_key_pair.generated_key.key_name
-  # user_data = file("${path.module}/apache.sh")
   user_data = file("install_ansible.sh")
   tags = {
     Name = "webserver",
@@ -30,51 +29,51 @@ resource "aws_instance" "example" {
     volume_size = 30
     volume_type = "gp2"
   }
-  provisioner "local-exec" {
-    command = "touch dynamic_inventory.ini"
-  }
+  # provisioner "local-exec" {
+  #   command = "touch dynamic_inventory.ini"
+  # }
 
-  provisioner "remote-exec" {
-    inline = [
-      "echo 'EC2 instance is ready.'"
-    ]
+  # provisioner "remote-exec" {
+  #   inline = [
+  #     "echo 'EC2 instance is ready.'"
+  #   ]
 
-    connection {
-      type        = "ssh"
-      host        = self.public_ip
-      user        = "ubuntu"
-      private_key = tls_private_key.example.private_key_pem
-    }
+  #   connection {
+  #     type        = "ssh"
+  #     host        = self.public_ip
+  #     user        = "ubuntu"
+  #     private_key = tls_private_key.example.private_key_pem
+  #   }
 
-  }
+  # }
 }
 
-data "template_file" "inventory" {
-  template = <<-EOT
-    [ec2_instances]
-    ${aws_instance.example.public_ip} ansible_user=ubuntu ansible_private_key_file=${path.module}/${var.key_name}
-    EOT
-}
+# data "template_file" "inventory" {
+#   template = <<-EOT
+#     [ec2_instances]
+#     ${aws_instance.example.public_ip} ansible_user=ubuntu ansible_private_key_file=${path.module}/${var.key_name}
+#     EOT
+# }
 
-resource "local_file" "dynamic_inventory" {
-  depends_on = [aws_instance.example]
+# resource "local_file" "dynamic_inventory" {
+#   depends_on = [aws_instance.example]
 
-  filename = "dynamic_inventory.ini"
-  content  = data.template_file.inventory.rendered
+#   filename = "dynamic_inventory.ini"
+#   content  = data.template_file.inventory.rendered
 
-  provisioner "local-exec" {
-    command = "chmod 400 ${local_file.dynamic_inventory.filename}"
-  }
-}
+#   provisioner "local-exec" {
+#     command = "chmod 400 ${local_file.dynamic_inventory.filename}"
+#   }
+# }
 
-resource "null_resource" "run_ansible" {
-  depends_on = [local_file.dynamic_inventory]
+# resource "null_resource" "run_ansible" {
+#   depends_on = [local_file.dynamic_inventory]
 
-  provisioner "local-exec" {
-    command = "ansible-playbook -i dynamic_inventory.ini apache-playbook.yml"
-    working_dir = path.module
-  }
-}
+#   provisioner "local-exec" {
+#     command = "ansible-playbook -i dynamic_inventory.ini apache-playbook.yml"
+#     working_dir = path.module
+#   }
+# }
 
 resource "aws_instance" "jenkins" {
   ami = "ami-04b70fa74e45c3917"
