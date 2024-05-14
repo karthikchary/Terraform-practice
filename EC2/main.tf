@@ -20,11 +20,6 @@ resource "aws_instance" "example" {
   vpc_security_group_ids = ["${aws_security_group.web-sg.id}"]
   associate_public_ip_address = true
   key_name = aws_key_pair.generated_key.key_name
-  user_data = <<-EOF
-	      #!/bin/bash
-	      sudo apt update -y && sudo apt install apache2 -y
-	      sudo systemctl start apache2 && sudo systemctl apache2 httpd
-	      EOF
   tags = {
     Name = "webserver",
     owner = "karthik"
