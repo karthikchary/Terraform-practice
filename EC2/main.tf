@@ -44,36 +44,9 @@ resource "aws_instance" "example" {
   #     user        = "ubuntu"
   #     private_key = tls_private_key.example.private_key_pem
   #   }
-
   # }
 }
 
-# data "template_file" "inventory" {
-#   template = <<-EOT
-#     [ec2_instances]
-#     ${aws_instance.example.public_ip} ansible_user=ubuntu ansible_private_key_file=${path.module}/${var.key_name}
-#     EOT
-# }
-
-# resource "local_file" "dynamic_inventory" {
-#   depends_on = [aws_instance.example]
-
-#   filename = "dynamic_inventory.ini"
-#   content  = data.template_file.inventory.rendered
-
-#   provisioner "local-exec" {
-#     command = "chmod 400 ${local_file.dynamic_inventory.filename}"
-#   }
-# }
-
-# resource "null_resource" "run_ansible" {
-#   depends_on = [local_file.dynamic_inventory]
-
-#   provisioner "local-exec" {
-#     command = "ansible-playbook -i dynamic_inventory.ini apache-playbook.yml"
-#     working_dir = path.module
-#   }
-# }
 
 resource "aws_instance" "jenkins" {
   ami = "ami-04b70fa74e45c3917"
